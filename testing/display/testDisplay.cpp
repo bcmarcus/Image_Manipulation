@@ -13,7 +13,7 @@
 #include "testDisplay.hpp"
 
 #include <coreutils/functions/cli/accessCli.hpp>
-#include <imageEdit/util/imageUtil.hpp>
+#include <Image_Manipulation/util/imageUtil.hpp>
 
 using namespace std;
 using namespace coreutils::functions;
@@ -54,7 +54,7 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	// this->SetMinClientSize (size);
    // this->SetMaxClientSize (size);
 
-	// string inputImagePath = imageEdit::util::imageFromFileHandler();
+	// string inputImagePath = Image_Manipulation::util::imageFromFileHandler();
 	string inputImagePath = "/home/aralyth/Downloads/tiles.jpeg";
 	wxImage* img = new wxImage(inputImagePath, wxBITMAP_TYPE_JPEG);
 	int imageHeight = WINDOW_HEIGHT - BUTTON_HEIGHT;
