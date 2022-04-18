@@ -1,0 +1,3 @@
+[submodule "ProjectiveGeometry/eigen"]
+	path = ProjectiveGeometry/eigen
+	url = https://gitlab.com/libeigen/eigen.git

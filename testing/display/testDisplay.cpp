@@ -1,34 +1,23 @@
-
-
 #include <Magick++.h> 
 #include <stdlib.h>
 
-#include "wx/wx.h"
 #include "wx/wxprec.h"
+#include "wx/wx.h"
 #include <wx/gdicmn.h>
 #include <wx/evtloop.h>
 
 #include <filesystem>
 
 #include "testDisplay.hpp"
+#include "ImageWidget.hpp"
 
 #include <coreutils/functions/cli/accessCli.hpp>
 #include <Image_Manipulation/util/imageUtil.hpp>
-
+#include <Eigen/Dense>
+ 
+using Eigen::MatrixXd;
 using namespace std;
 using namespace coreutils::functions;
-
-#define GUI 1
-#define WINDOW_ID (wxID_HIGHEST + 1)
-#define IMAGE_ID (wxID_HIGHEST + 2)
-#define B1_ID (wxID_HIGHEST + 3)
-#define B2_ID (wxID_HIGHEST + 4)
-#define B3_ID (wxID_HIGHEST + 5)
-#define NUM_BUTTONS 3
-#define WINDOW_WIDTH 670
-#define WINDOW_HEIGHT 698
-#define BUTTON_WIDTH (WINDOW_WIDTH / NUM_BUTTONS)
-#define BUTTON_HEIGHT (WINDOW_HEIGHT / 8)
 
 IMPLEMENT_APP(testDisplay) // Initializes the MainApp class and tells our program
   // to run it
@@ -43,31 +32,35 @@ bool testDisplay::OnInit()
 	return TRUE;
 } 
 
-	BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
-		EVT_BUTTON ( B1_ID, MainFrame::projectiveDistortion )
-		EVT_BUTTON ( B2_ID, MainFrame::edgeDetection )
-		EVT_BUTTON ( B3_ID, MainFrame::objectDetection )
-	END_EVENT_TABLE() // The button is pressed
+BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
+	EVT_BUTTON ( B1_ID, MainFrame::projectiveDistortion )
+	EVT_BUTTON ( B2_ID, MainFrame::edgeDetection )
+	EVT_BUTTON ( B3_ID, MainFrame::objectDetection )
+END_EVENT_TABLE() // The button is pressed
 
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size): wxFrame((wxFrame*)NULL,  - 1, title, pos, size){
 	
 	// this->SetMinClientSize (size);
    // this->SetMaxClientSize (size);
 
-	// string inputImagePath = Image_Manipulation::util::imageFromFileHandler();
-	string inputImagePath = "/home/aralyth/Downloads/tiles.jpeg";
-	wxImage* img = new wxImage(inputImagePath, wxBITMAP_TYPE_JPEG);
+	// string inputImagePath = imageEdit::util::imageFromFileHandler();
+	string inputImagePath = "/home/aralyth/Downloads/tiles.png";
+	wxImage* img = new wxImage(inputImagePath, wxBITMAP_TYPE_PNG);
 	int imageHeight = WINDOW_HEIGHT - BUTTON_HEIGHT;
 	int imageWidth = WINDOW_WIDTH;
+	wxSize scale = img->GetSize();
 	img->Rescale (imageWidth, imageHeight);
 	wxBitmap* bitmap = new wxBitmap (*img);
-	wxStaticBitmap* imageBitmap = new wxStaticBitmap(this, wxID_ANY, *bitmap, *(new wxPoint (0, BUTTON_HEIGHT)), *(new wxSize (imageWidth, imageHeight)));
+	this->imageBitmap = new ImageWidget(bitmap, this, wxID_ANY, *(new wxPoint (0, BUTTON_HEIGHT)), *(new wxSize (imageWidth, imageHeight)), scale, inputImagePath);
 	makeButtons();
 }
 
 void MainFrame::projectiveDistortion( wxCommandEvent& event ) {
+	// wxPoint 	GetLogicalPosition (const wxDC &dc) const
+	
+
 	std::cout << "projectiveDistortion\n";
-	// Close(TRUE); // Tells the OS to quit running this process
+	this->imageBitmap->projectiveDistortion();
 }
 
 void MainFrame::edgeDetection( wxCommandEvent& event ) {
@@ -79,7 +72,6 @@ void MainFrame::objectDetection( wxCommandEvent& event ) {
 	std::cout << "objectDetection\n";
 	// Close(TRUE); // Tells the OS to quit running this process
 }
-
 
 wxButton** MainFrame::makeButtons() {
 	wxButton** buttonList = new wxButton*[3];

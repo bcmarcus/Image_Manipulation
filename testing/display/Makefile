@@ -4,14 +4,15 @@ NVCC = /usr/local/cuda-11.6/bin/nvcc
 
 INCLUDE = ../../../
 DEFINES = -DUSE_ZLIB
+EIGEN = $(INCLUDE)Image_Manipulation/ProjectiveGeometry/eigen
 
-OPTFLAGS = -O2 -std=c++2a -Wall 
+OPTFLAGS = -std=c++17 -Wall # -O2
 
-NVFLAGS = -I $(INCLUDE) -I $(EXTRAI) -Xcompiler -O2 -L/usr/local/cuda-11.6/lib64 -lcuda -lstdc++ -lcudart -dc -arch=sm_86 --std=c++17 
+NVFLAGS = -I $(INCLUDE) -I $(EXTRAI) -I $(EIGEN) -Xcompiler -L/usr/local/cuda-11.6/lib64 -lcuda -lstdc++ -lcudart -dc -arch=sm_86 --std=c++17 # -O2
 NVLINKFLAGS = -L/usr/local/cuda-11.6/lib64 -lcuda -lcudart
 #-lstdc++
 
-CPPFLAGS = $(OPTFLAGS) -I $(INCLUDE) $(DEFINES)
+CPPFLAGS = $(OPTFLAGS) -I $(INCLUDE) -I $(EIGEN) $(DEFINES) 
 LINKFLAGS = -lz 
 
 WXWIDGETSFLAGS = `wx-config --libs --cxxflags --cppflags`
@@ -27,7 +28,8 @@ NVCCOBJS = src/testDisplay.o \
 	src/activationFunctions.o \
 	src/Matrix3D.o
 
-CPPOBJS = src/imageUtil.o
+CPPOBJS = src/imageUtil.o \
+	src/ImageWidget.o
 
 all: linkCPU
 
@@ -39,6 +41,9 @@ src/gpuCode.o: $(NVCCOBJS)
 
 src/imageUtil.o: $(INCLUDE)Image_Manipulation/util/imageUtil.cpp $(INCLUDE)Image_Manipulation/util/imageUtil.hpp 
 	$(CCPP) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+
+src/ImageWidget.o: ImageWidget.cpp
+	$(CCPP) $(CPPFLAGS) -c $< -o $@ $(WXWIDGETSFLAGS) $(MAGICKFLAGS)
 
 src/Matrix3D.o: $(INCLUDE)coreutils/classes/matrixes/Matrix3D.cu
 	$(NVCC) $(NVFLAGS) $< -o $@
