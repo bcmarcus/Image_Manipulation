@@ -19,7 +19,5 @@ sudo apt-get install libwxgtk3.1-0-unofficial-dbg
 sudo apt-get install libwxgtk-webview3.1-0-unofficial-dbg
 sudo apt-get install libwxgtk-media3.1-0-unofficial-dbg 
 
-
-
 sudo apt install zlib1g
 sudo apt install zlib1g-dev

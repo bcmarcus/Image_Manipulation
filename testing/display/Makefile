@@ -8,7 +8,7 @@ EIGEN = $(INCLUDE)Image_Manipulation/ProjectiveGeometry/eigen
 
 OPTFLAGS = -std=c++17 -Wall # -O2
 
-NVFLAGS = -I $(INCLUDE) -I $(EXTRAI) -I $(EIGEN) -Xcompiler -L/usr/local/cuda-11.6/lib64 -lcuda -lstdc++ -lcudart -dc -arch=sm_86 --std=c++17 # -O2
+NVFLAGS = -I $(INCLUDE) -I $(EIGEN) -Xcompiler -L/usr/local/cuda-11.6/lib64 -lcuda -lstdc++ -lcudart -dc --std=c++17 # -O2
 NVLINKFLAGS = -L/usr/local/cuda-11.6/lib64 -lcuda -lcudart
 #-lstdc++
 
@@ -37,7 +37,7 @@ linkCPU: $(CPPOBJS) $(NVCCOBJS) src/gpuCode.o
 	$(CCPP) $(CPPFLAGS) -o testDisplay.out  $^ $(LINKFLAGS) $(NVLINKFLAGS) $(MAGICKLINKFLAGS) $(WXWIDGETSLINKFLAGS)
 
 src/gpuCode.o: $(NVCCOBJS)
-	$(NVCC) --device-link -arch=sm_86 -o $@ $^ $(LINKFLAGS) $(NVLINKFLAGS) $(CPPOBJS)
+	$(NVCC) --device-link -o $@ $^ $(LINKFLAGS) $(NVLINKFLAGS) $(CPPOBJS)
 
 src/imageUtil.o: $(INCLUDE)Image_Manipulation/util/imageUtil.cpp $(INCLUDE)Image_Manipulation/util/imageUtil.hpp 
 	$(CCPP) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
