@@ -1,1 +1,3 @@
 *eigen/**
+*.png
+/src
