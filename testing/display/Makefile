@@ -67,4 +67,4 @@ clean1:
 	rm -f src/*.o ./testDisplay.out
 
 clean: 
-	rm -f ./testDisplay.out
+	rm -f src/ImageWidget.o src/gpuCode.o ./testDisplay.out

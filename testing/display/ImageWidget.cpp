@@ -16,11 +16,13 @@ ImageWidget::ImageWidget(wxBitmap* bitmap, wxWindow* parent, int id, const wxPoi
 	: wxStaticBitmap(parent, id, *bitmap, pos, size)
 {
 	this->projectiveIsActive = false;
+	this->edgeDetectionIsActive = false;
 	this->initialImage = bitmap;
 	this->clickedPoints = new wxPoint[4];
    this->counter = 0;
 	this->scale = scale;
 	this->inputImagePath = inputImagePath;
+	this->currentImagePath = inputImagePath;
 }
 
 BEGIN_EVENT_TABLE ( ImageWidget, wxStaticBitmap )
@@ -30,9 +32,7 @@ END_EVENT_TABLE() // The button is pressed
 void ImageWidget::clickedPoint( wxMouseEvent& event ) {
 	std::cout << "clickedPoint\n";
 	if (counter == 4) {
-		delete this->clickedPoints;
-		this->clickedPoints = new wxPoint[4];
-		counter = 0;
+		this->clearPoints();
 	} else {
 		this->clickedPoints[counter] = event.GetPosition();
 		this->clickedPoints[counter].x = this->clickedPoints[counter].x * this->scale.GetWidth() / this->initialImage->GetSize().GetWidth();
@@ -43,28 +43,43 @@ void ImageWidget::clickedPoint( wxMouseEvent& event ) {
 	}
 }
 
+void ImageWidget::displayInitialImage() {
+	this->SetBitmap(*this->initialImage);
+	this->currentImagePath = this->inputImagePath;
+}
+
+void ImageWidget::clearPoints() {
+	delete this->clickedPoints;
+	this->clickedPoints = new wxPoint[4];
+	counter = 0;
+}
+
 void ImageWidget::projectiveDistortion () {
-	if (this->projectiveIsActive) {
-		this->SetBitmap(*this->initialImage);
-		this->projectiveIsActive = false;
-	}
-	else if (counter != 4) {
+	if (counter != 4) {
 		std::cout << "Invalid number of points chosen.\n";
 	}
 	else {
-		
-		// calculate the distortion
+		int size = 0;
+		for (int i = 0; i < 4; i++) {
+			int linXDist = this->clickedPoints[i].x - this->clickedPoints[(i + 1) % 4].x;
+			int linYDist = this->clickedPoints[i].y - this->clickedPoints[(i + 1) % 4].y;
+			double totalDist = sqrt(linXDist * linXDist + linYDist * linYDist);
+			size += totalDist;
+		}
+		size /= 5;
+		std::cout << size;
+		// exit(0);
 		MatrixXd transformed(4,3);
 		transformed << 
 		1, 1, 1, 
-		1, 100, 1,
-		100, 100, 1,
-		100, 1, 1;
+		1, size, 1,
+		size, size, 1,
+		size, 1, 1;
 
 		MatrixXd A(8,9);
 
-		std::string execute = "'convert' '-virtual-pixel' 'black' '-mattecolor' 'black' \'" + this->inputImagePath + "\' '+distort' 'Perspective' '";
-
+		std::string execute1 = "'convert' '-virtual-pixel' 'black' '-mattecolor' 'black' \'" + this->currentImagePath + "\' '+distort' 'Perspective' '";
+		std::string execute2 = "'convert' '-virtual-pixel' 'black' '-mattecolor' 'black' \'" + this->currentImagePath + "\' '+distort' 'PerspectiveProjection' ";
 		for (int i = 0; i < 4; i++) {
 			MatrixXd pair(2,9);
 			MatrixXd currentA((i + 1) * 2,9);
@@ -78,37 +93,68 @@ void ImageWidget::projectiveDistortion () {
 			A.block<2,9>(i * 2, 0) << 
 			x, y, z, 0, 0, 0, -x * sx, -y * sx, -z * sx,
 			0, 0, 0, x ,y, z, -x * sy, -y * sy, -z * sy;
-			execute += std::to_string(x) + ",";
-			execute += std::to_string(y) + " ";
-			execute += std::to_string(sx) + ",";
-			execute += std::to_string(sy) + "  ";
+			execute1 += std::to_string(x) + ",";
+			execute1 += std::to_string(y) + " ";
+			execute1 += std::to_string(sx) + ",";
+			execute1 += std::to_string(sy) + "  ";
 		}
-		execute += "' 'perspectiveDistortion.png'";
+		execute1 += "' 'perspectiveDistortion.png'";
 
-		std::cout << A << "\n\n";
 		FullPivLU<MatrixXd> lu(A);
 		MatrixXd x = lu.kernel();
-		std::cout << x << '\n';
 		MatrixXd H = x.reshaped(3, 3);
-		std::cout << H << '\n';
-		
-		std::cout << execute << '\n';
-		cli::exec(execute.c_str());
+		H *= (1 / H(2, 2));
 
+		execute2 += "'" + 
+		std::to_string(H(0, 0)) + ", " + std::to_string(H(1, 0)) + ", " + std::to_string(H(2, 0)) + ", " + 
+		std::to_string(H(0, 1)) + ", " + std::to_string(H(1, 1)) + ", " + std::to_string(H(2, 1)) + ", " + 
+		std::to_string(H(0, 2)) + ", " + std::to_string(H(1, 2)) + "'";
+		execute2 += " 'perspectiveDistortion.png'";
 
-		// exit(0);
-		// Image image(filepath);
-		// image.distort(MagickCore::DistortMethod::AffineProjectionDistortion, 16, "0, 0", true);
-		// image.ToByteArray(CommonFormat);
+		if (USINGEIGEN) {
+			std::cout << execute2 << '\n';
+			cli::exec(execute2.c_str());
+		} else {
+			std::cout << execute1 << '\n';
+			cli::exec(execute1.c_str());
+		}
 
 		// make the new image
 		wxImage* img = new wxImage("perspectiveDistortion.png", wxBITMAP_TYPE_PNG);
-		int imageHeight = WINDOW_HEIGHT - BUTTON_HEIGHT;
-		int imageWidth = WINDOW_WIDTH;
+		// int imageHeight = WINDOW_HEIGHT - BUTTON_HEIGHT;
+		// int imageWidth = WINDOW_WIDTH;
 		// wxSize scale = img->GetSize();
 		// img->Rescale (imageWidth, imageHeight);
 		this->projectiveDistortionImage = new wxBitmap (*img);
 		this->SetBitmap(*this->projectiveDistortionImage);
-		this->projectiveIsActive = true;
+		this->currentImagePath = "perspectiveDistortion.png";
+		this->clearPoints();
 	}
+}
+
+void ImageWidget::edgeDetection() {
+	std::string execute1 = "'convert' '-virtual-pixel' 'black' '-mattecolor' 'black' \'" + this->currentImagePath + "\' '+distort' 'Perspective' '";
+	std::string execute2 = "'convert' '-virtual-pixel' 'black' '-mattecolor' 'black' \'" + this->currentImagePath + "\' '+distort' 'PerspectiveProjection' ";
+
+	if (USINGEIGEN) {
+		std::cout << execute2 << '\n';
+		cli::exec(execute2.c_str());
+	} else {
+		std::cout << execute1 << '\n';
+		cli::exec(execute1.c_str());
+	}
+
+	// make the new image
+	wxImage* img = new wxImage("perspectiveDistortion.png", wxBITMAP_TYPE_PNG);
+	// int imageHeight = WINDOW_HEIGHT - BUTTON_HEIGHT;
+	// int imageWidth = WINDOW_WIDTH;
+	// wxSize scale = img->GetSize();
+	// img->Rescale (imageWidth, imageHeight);
+	this->projectiveDistortionImage = new wxBitmap (*img);
+	this->SetBitmap(*this->projectiveDistortionImage);
+	this->projectiveIsActive = true;
+}
+
+void ImageWidget::objectDetection() {
+
 }

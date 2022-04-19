@@ -11,18 +11,24 @@ class ImageWidget: public wxStaticBitmap {
 	public:
 		wxPoint* clickedPoints;
 		wxSize scale;
+		std::string currentImagePath;
+		std::string inputImagePath;
 		wxBitmap* initialImage;
 		wxBitmap* projectiveDistortionImage;
 		wxBitmap* edgeDetectionImage;
-		std::string inputImagePath;
 		bool projectiveIsActive;
+		bool edgeDetectionIsActive;
 
 		int counter;
 
 		ImageWidget(wxBitmap* bitmap, wxWindow* parent, int id, const wxPoint &pos, const wxSize &size, wxSize scale, std::string inputImagePath);
 
 		void clickedPoint(wxMouseEvent& event);
+		void displayInitialImage();
+		void clearPoints();
 		void projectiveDistortion();
+		void edgeDetection();
+		void objectDetection();
 
 		DECLARE_EVENT_TABLE();
 };
