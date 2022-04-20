@@ -5,6 +5,7 @@
 #include "wx/wx.h"
 #include "wx/wxprec.h"
 #include <wx/gdicmn.h>
+#include <Image_Manipulation/util/objectDetection.cuh>
 
 class ImageWidget: public wxStaticBitmap {
 // It contains the window and all objects in it

@@ -26,7 +26,8 @@ NVCCOBJS = src/testDisplay.o \
 	src/BasicLayer.o \
 	src/BasicWeight.o \
 	src/activationFunctions.o \
-	src/Matrix3D.o
+	src/Matrix3D.o \
+	src/objectDetection.o
 
 CPPOBJS = src/imageUtil.o \
 	src/ImageWidget.o
@@ -43,7 +44,10 @@ src/imageUtil.o: $(INCLUDE)Image_Manipulation/util/imageUtil.cpp $(INCLUDE)Image
 	$(CCPP) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 src/ImageWidget.o: ImageWidget.cpp
-	$(NVCC) $(NVFLAGS) -c $< -o $@ $(WXWIDGETSFLAGS) $(MAGICKFLAGS)
+	$(CCPP) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ $(WXWIDGETSFLAGS) $(MAGICKFLAGS)
+	
+src/objectDetection.o: $(INCLUDE)Image_Manipulation/util/objectDetection.cu $(INCLUDE)Image_Manipulation/util/objectDetection.cuh 
+	$(NVCC) $(NVFLAGS) $< -o $@
 
 src/Matrix3D.o: $(INCLUDE)coreutils/classes/matrixes/Matrix3D.cu
 	$(NVCC) $(NVFLAGS) $< -o $@
@@ -61,7 +65,7 @@ src/BasicLayerList.o: $(INCLUDE)AI_Simple_CUDA/artificialIntelligence/classes/la
 	$(NVCC) $(NVFLAGS) $< -o $@
 
 src/testDisplay.o : testDisplay.cpp  $(INCLUDE)AI_Simple_CUDA/artificialIntelligence/basicLearningTypes/generationalAIBasic.cu $(INCLUDE)AI_Simple_CUDA/artificialIntelligence/classes/layerLists/BasicLayerList.cuh $(INCLUDE)AI_Simple_CUDA/artificialIntelligence/basicLearningTypes/generationalAIBasic.cuh $(INCLUDE)coreutils/classes/matrixes/Matrix3D.cuh
-	$(NVCC) $(NVFLAGS) $< -o $@ $(WXWIDGETSFLAGS) $(MAGICKFLAGS)
+	$(CCPP) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ $(WXWIDGETSFLAGS) $(MAGICKFLAGS)
 
 clean1: 
 	rm -f src/*.o ./testDisplay.out

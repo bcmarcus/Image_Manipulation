@@ -3,8 +3,6 @@
 
 #include "ImageWidget.hpp"
 
-#include <AI_Simple_CUDA/artificialIntelligence/classes/layerLists/BasicLayerList.cuh>
-
 #include "wx/wxprec.h"
 #include "wx/wx.h"
 #include <wx/gdicmn.h>

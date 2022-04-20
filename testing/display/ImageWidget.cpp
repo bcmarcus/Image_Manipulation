@@ -35,14 +35,13 @@ void ImageWidget::clickedPoint( wxMouseEvent& event ) {
 	std::cout << "clickedPoint\n";
 	if (counter == 4) {
 		this->clearPoints();
-	} else {
-		this->clickedPoints[counter] = event.GetPosition();
-		this->clickedPoints[counter].x = this->clickedPoints[counter].x * this->scale.GetWidth() / this->initialImage->GetSize().GetWidth();
-		this->clickedPoints[counter].y = this->clickedPoints[counter].y * this->scale.GetHeight() / this->initialImage->GetSize().GetHeight();
-		std::cout << "x: " << this->clickedPoints[counter].x << '\n';
-		std::cout << "y: " << this->clickedPoints[counter].y << '\n';
-		counter++;
-	}
+	} 
+	this->clickedPoints[counter] = event.GetPosition();
+	this->clickedPoints[counter].x = this->clickedPoints[counter].x * this->scale.GetWidth() / this->initialImage->GetSize().GetWidth();
+	this->clickedPoints[counter].y = this->clickedPoints[counter].y * this->scale.GetHeight() / this->initialImage->GetSize().GetHeight();
+	std::cout << "x: " << this->clickedPoints[counter].x << '\n';
+	std::cout << "y: " << this->clickedPoints[counter].y << '\n';
+	counter++;
 }
 
 void ImageWidget::displayInitialImage() {
@@ -130,7 +129,6 @@ void ImageWidget::projectiveDistortion () {
 		this->projectiveDistortionImage = new wxBitmap (*img);
 		this->SetBitmap(*this->projectiveDistortionImage);
 		this->currentImagePath = "perspectiveDistortion.png";
-		this->clearPoints();
 	}
 }
 
@@ -159,39 +157,5 @@ void ImageWidget::edgeDetection() {
 
 void ImageWidget::objectDetection() {
 	// AI Model stuff
-	if (AILEVEL == 0 || AILEVEL == 1) {
-		BasicLayerList* model = nullptr;
-		std::ifstream indexToAnswerFile;
-		if (AILEVEL == 0) {
-			//use mnist dataset
-			model = new BasicLayerList (modelPath);
-			indexToAnswerFile = ifstream (indexToAnswerFilePath);
-		}
-		if (AILEVEL == 1) {
-			// use animal dataset
-			model = new BasicLayerList (modelPath);
-			indexToAnswerFile = ifstream (indexToAnswerFilePath);
-		}
-		int numOutputs = model->getLast()->getLayer()->getHeight();
-		int amountShown = 5;
-		
-		string line;
-		std::string *indexToAnswerMap = makeIndexArray(numOutputs, indexToAnswerFile);
-
-		std::string type;
-		if (model->getRoot()->getLayer()->getLength() == 1) {
-			type = "BW";
-		} else if (model->getRoot()->getLayer()->getLength() == 3) {
-			type = "RGB";
-		} else if (model->getRoot()->getLayer()->getLength() == 4) {
-			type = "RGBA";
-		} else {
-			std::cout << "Invalid model, invalid input length";
-			exit (1);
-		}
-		// use the model for a test
-	} else if (AILEVEL == 2) {
-		// use clip
-	}
 
 }
