@@ -21,3 +21,20 @@ sudo apt-get install libwxgtk-media3.1-0-unofficial-dbg
 
 sudo apt install zlib1g
 sudo apt install zlib1g-dev
+
+
+ImageMagick
+
+git clone https://github.com/ImageMagick/ImageMagick.git ImageMagick-7.1.0
+cd ImageMagick-7.1.0
+sudo apt-get install -y libtiff-dev
+sudo apt-get install -y libjpeg62-dev 
+sudo apt-get install -y libpng-dev
+./configure
+make
+
+#If build fails, try gmake instead.
+
+sudo make install
+sudo ldconfig /usr/local/lib
+make check

@@ -3,12 +3,14 @@
 
 #include "ImageWidget.hpp"
 
+#include <AI_Simple_CUDA/artificialIntelligence/classes/layerLists/BasicLayerList.cuh>
+
 #include "wx/wxprec.h"
 #include "wx/wx.h"
 #include <wx/gdicmn.h>
 #include <wx/evtloop.h>
 
-#define USINGEIGEN 0
+#define USINGEIGEN 1
 #define AILEVEL 0 //0 is MNIST, 1 is ANIMAL, 2 is CLIP
 #define WINDOW_ID (wxID_HIGHEST + 1)
 #define IMAGE_ID (wxID_HIGHEST + 2)

@@ -2,6 +2,8 @@
 #include "testDisplay.hpp"
 #include <Magick++.h> 
 
+#include <fstream>
+
 #include "wx/wx.h"
 #include "wx/wxprec.h"
 #include <wx/gdicmn.h>
@@ -19,7 +21,7 @@ ImageWidget::ImageWidget(wxBitmap* bitmap, wxWindow* parent, int id, const wxPoi
 	this->edgeDetectionIsActive = false;
 	this->initialImage = bitmap;
 	this->clickedPoints = new wxPoint[4];
-   this->counter = 0;
+	this->counter = 0;
 	this->scale = scale;
 	this->inputImagePath = inputImagePath;
 	this->currentImagePath = inputImagePath;
@@ -156,5 +158,40 @@ void ImageWidget::edgeDetection() {
 }
 
 void ImageWidget::objectDetection() {
+	// AI Model stuff
+	if (AILEVEL == 0 || AILEVEL == 1) {
+		BasicLayerList* model = nullptr;
+		std::ifstream indexToAnswerFile;
+		if (AILEVEL == 0) {
+			//use mnist dataset
+			model = new BasicLayerList (modelPath);
+			indexToAnswerFile = ifstream (indexToAnswerFilePath);
+		}
+		if (AILEVEL == 1) {
+			// use animal dataset
+			model = new BasicLayerList (modelPath);
+			indexToAnswerFile = ifstream (indexToAnswerFilePath);
+		}
+		int numOutputs = model->getLast()->getLayer()->getHeight();
+		int amountShown = 5;
+		
+		string line;
+		std::string *indexToAnswerMap = makeIndexArray(numOutputs, indexToAnswerFile);
+
+		std::string type;
+		if (model->getRoot()->getLayer()->getLength() == 1) {
+			type = "BW";
+		} else if (model->getRoot()->getLayer()->getLength() == 3) {
+			type = "RGB";
+		} else if (model->getRoot()->getLayer()->getLength() == 4) {
+			type = "RGBA";
+		} else {
+			std::cout << "Invalid model, invalid input length";
+			exit (1);
+		}
+		// use the model for a test
+	} else if (AILEVEL == 2) {
+		// use clip
+	}
 
 }

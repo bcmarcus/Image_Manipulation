@@ -92,7 +92,16 @@ void MainFrame::objectDetection( wxCommandEvent& event ) {
 wxButton** MainFrame::makeButtons() {
 	wxButton** buttonList = new wxButton*[5];
 	wxButton* B1 = new wxButton(this, B1_ID, _T("Initial\nImage"), *(new wxPoint (BUTTON_WIDTH * 0, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
-	wxButton* B2 = new wxButton(this, B2_ID, _T("Clear\nPoints"), *(new wxPoint (BUTTON_WIDTH * 1, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
+	wxButton* B2 = new wxB	if (model->getRoot()->getLayer()->getLength() == 1) {
+			type = "BW";
+		} else if (model->getRoot()->getLayer()->getLength() == 3) {
+			type = "RGB";
+		} else if (model->getRoot()->getLayer()->getLength() == 4) {
+			type = "RGBA";
+		} else {
+			std::cout << "Invalid model, invalid input length";
+			exit (1);
+		}utton(this, B2_ID, _T("Clear\nPoints"), *(new wxPoint (BUTTON_WIDTH * 1, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
 	wxButton* B3 = new wxButton(this, B3_ID, _T("Projective\nDistortion"), *(new wxPoint (BUTTON_WIDTH * 2, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
 	wxButton* B4 = new wxButton(this, B4_ID, _T("Edge\nDetection"), *(new wxPoint (BUTTON_WIDTH * 3, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
 	wxButton* B5 = new wxButton(this, B5_ID, _T("Object\nDetection"), *(new wxPoint (BUTTON_WIDTH * 4, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
