@@ -37,7 +37,8 @@ BEGIN_EVENT_TABLE ( MainFrame, wxFrame )
 	EVT_BUTTON ( B2_ID, MainFrame::clearPoints )
 	EVT_BUTTON ( B3_ID, MainFrame::projectiveDistortion )
 	EVT_BUTTON ( B4_ID, MainFrame::edgeDetection )
-	EVT_BUTTON ( B5_ID, MainFrame::objectDetection )
+	EVT_BUTTON ( B5_ID, MainFrame::gaussianBlur )
+	EVT_BUTTON ( B6_ID, MainFrame::objectDetection )
 END_EVENT_TABLE() // The button is pressed
 
 MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &size): wxFrame((wxFrame*)NULL,  - 1, title, pos, size){
@@ -45,8 +46,8 @@ MainFrame::MainFrame(const wxString &title, const wxPoint &pos, const wxSize &si
 	// this->SetMinClientSize (size);
    // this->SetMaxClientSize (size);
 
-	// string inputImagePath = imageEdit::util::imageFromFileHandler();
-	string inputImagePath = "/home/aralyth/Downloads/tiles.png";
+	string inputImagePath = imageEdit::util::imageFromFileHandler();
+	// string inputImagePath = "/home/aralyth/Downloads/tiles.png";
 	wxImage* img = new wxImage(inputImagePath, wxBITMAP_TYPE_PNG);
 	int imageHeight = WINDOW_HEIGHT - BUTTON_HEIGHT;
 	int imageWidth = WINDOW_WIDTH;
@@ -83,6 +84,12 @@ void MainFrame::edgeDetection( wxCommandEvent& event ) {
 	// Close(TRUE); // Tells the OS to quit running this process
 }
 
+void MainFrame::gaussianBlur( wxCommandEvent& event ) {
+	std::cout << "gaussianBlur\n";
+	this->imageBitmap->gaussianBlur();
+	// Close(TRUE); // Tells the OS to quit running this process
+}
+
 void MainFrame::objectDetection( wxCommandEvent& event ) {
 	std::cout << "objectDetection\n";
 	this->imageBitmap->objectDetection();
@@ -95,13 +102,15 @@ wxButton** MainFrame::makeButtons() {
 	wxButton* B2 = new wxButton(this, B2_ID, _T("Clear\nPoints"), *(new wxPoint (BUTTON_WIDTH * 1, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
 	wxButton* B3 = new wxButton(this, B3_ID, _T("Projective\nDistortion"), *(new wxPoint (BUTTON_WIDTH * 2, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
 	wxButton* B4 = new wxButton(this, B4_ID, _T("Edge\nDetection"), *(new wxPoint (BUTTON_WIDTH * 3, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
-	wxButton* B5 = new wxButton(this, B5_ID, _T("Object\nDetection"), *(new wxPoint (BUTTON_WIDTH * 4, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
+	wxButton* B5 = new wxButton(this, B5_ID, _T("Gaussian\nBlur"), *(new wxPoint (BUTTON_WIDTH * 4, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
+	wxButton* B6 = new wxButton(this, B6_ID, _T("Object\nDetection"), *(new wxPoint (BUTTON_WIDTH * 5, 0)), wxSize(BUTTON_WIDTH, BUTTON_HEIGHT), 0);
 
 	buttonList[0] = B1;
 	buttonList[1] = B2;
 	buttonList[2] = B3;
 	buttonList[3] = B4;
 	buttonList[4] = B5;
+	buttonList[5] = B6;
 	return buttonList;
 }
 

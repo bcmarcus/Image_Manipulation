@@ -17,7 +17,10 @@
 #define B3_ID (wxID_HIGHEST + 5)
 #define B4_ID (wxID_HIGHEST + 6)
 #define B5_ID (wxID_HIGHEST + 7)
-#define NUM_BUTTONS 5
+#define B6_ID (wxID_HIGHEST + 8)
+#define B7_ID (wxID_HIGHEST + 9)
+#define B8_ID (wxID_HIGHEST + 10)
+#define NUM_BUTTONS 6
 #define WINDOW_WIDTH 900
 #define WINDOW_HEIGHT 720
 #define BUTTON_WIDTH (WINDOW_WIDTH / NUM_BUTTONS)
@@ -39,6 +42,7 @@ class MainFrame: public wxFrame {
 		void clearPoints(wxCommandEvent& event);
 		void projectiveDistortion(wxCommandEvent& event);
 		void edgeDetection(wxCommandEvent& event);
+		void gaussianBlur(wxCommandEvent& event);
 		void objectDetection(wxCommandEvent& event);
 
 		wxButton** makeButtons();

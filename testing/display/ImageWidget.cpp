@@ -133,29 +133,35 @@ void ImageWidget::projectiveDistortion () {
 }
 
 void ImageWidget::edgeDetection() {
-	std::string execute1 = "'convert' '-virtual-pixel' 'black' '-mattecolor' 'black' \'" + this->currentImagePath + "\' '+distort' 'Perspective' '";
-	std::string execute2 = "'convert' '-virtual-pixel' 'black' '-mattecolor' 'black' \'" + this->currentImagePath + "\' '+distort' 'PerspectiveProjection' ";
+	std::string execute1 = "convert " + this->currentImagePath + " -canny 0x1+10%+30% edgeDetectImage.png";
+	cli::exec(execute1.c_str());
 
-	if (USINGEIGEN) {
-		std::cout << execute2 << '\n';
-		cli::exec(execute2.c_str());
-	} else {
-		std::cout << execute1 << '\n';
-		cli::exec(execute1.c_str());
-	}
+	wxImage* img = new wxImage("edgeDetectImage.png", wxBITMAP_TYPE_PNG);
 
-	// make the new image
-	wxImage* img = new wxImage("perspectiveDistortion.png", wxBITMAP_TYPE_PNG);
-	// int imageHeight = WINDOW_HEIGHT - BUTTON_HEIGHT;
-	// int imageWidth = WINDOW_WIDTH;
-	// wxSize scale = img->GetSize();
-	// img->Rescale (imageWidth, imageHeight);
-	this->projectiveDistortionImage = new wxBitmap (*img);
-	this->SetBitmap(*this->projectiveDistortionImage);
-	this->projectiveIsActive = true;
+	this->edgeDetectionImage = new wxBitmap (*img);
+	this->SetBitmap(*this->edgeDetectionImage);
+	this->currentImagePath = "edgeDetectImage.png";
+}
+
+void ImageWidget::gaussianBlur() {
+	std::string execute1 = "convert " + this->currentImagePath + " -blur 0x8 -channel RGB gaussianBlurImage.png";
+	// std::cout << execute1.c_str() << "\n\n";
+	cli::exec(execute1.c_str());
+
+	wxImage* img = new wxImage("gaussianBlurImage.png", wxBITMAP_TYPE_PNG);
+
+	this->gaussianBlurImage = new wxBitmap (*img);
+	this->SetBitmap(*this->gaussianBlurImage);
+	this->currentImagePath = "gaussianBlurImage.png";
 }
 
 void ImageWidget::objectDetection() {
 	// AI Model stuff
+	std::string execute1 = "'convert' \'" + this->currentImagePath + "\' -resize 224x224\! imageScaled224.png";
+	// std::cout << execute1.c_str() << '\n';
+	cli::exec(execute1.c_str());
 
+	std::string execute2 = "python3 CLIP.py imageScaled224.png";
+	std::string out = cli::exec(execute2.c_str());
+	std::cout << out << '\n';
 }

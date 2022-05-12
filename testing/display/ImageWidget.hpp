@@ -17,6 +17,7 @@ class ImageWidget: public wxStaticBitmap {
 		wxBitmap* initialImage;
 		wxBitmap* projectiveDistortionImage;
 		wxBitmap* edgeDetectionImage;
+		wxBitmap* gaussianBlurImage;
 		bool projectiveIsActive;
 		bool edgeDetectionIsActive;
 
@@ -29,6 +30,7 @@ class ImageWidget: public wxStaticBitmap {
 		void clearPoints();
 		void projectiveDistortion();
 		void edgeDetection();
+		void gaussianBlur();
 		void objectDetection();
 
 		DECLARE_EVENT_TABLE();
