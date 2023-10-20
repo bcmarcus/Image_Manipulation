@@ -1,3 +1,6 @@
 [submodule "ProjectiveGeometry/eigen"]
 	path = ProjectiveGeometry/eigen
 	url = https://gitlab.com/libeigen/eigen.git
+[submodule "AI_Simple_CUDA"]
+	path = AI_Simple_CUDA
+	url = git@github.com:bcmarcus/AI_Simple_CUDA.git
